@@ -14,29 +14,36 @@ import firebase_admin
 from firebase_admin import credentials, storage
 import json
 
+# Load environment variables
+load_dotenv()
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
-logger = logging.getLogger(__name__)
-
-# Load environment variables
-load_dotenv()
-
-# Firebase configuration
-firebase_storage_bucket = os.environ.get('FIREBASE_STORAGE_BUCKET')
 
 # Initialize Firebase Admin SDK
-try:
-    cred = credentials.Certificate('dashboard-55056-6b33618a2530.json')
-    firebase_admin.initialize_app(cred, {
-        'storageBucket': firebase_storage_bucket
-    })
-    logger.info("Firebase Admin SDK initialized successfully")
-except Exception as e:
-    logger.error(f"Failed to initialize Firebase Admin SDK: {str(e)}")
-    raise
+if not firebase_admin._apps:
+    try:
+        cred_dict = {
+            "type": "service_account",
+            "project_id": "dashboard-55056",
+            "private_key_id": "6b33618a2530f557c7e7a9d6a6d6d6a6d6d6a6",
+            "private_key": os.environ.get("FIREBASE_PRIVATE_KEY", "").replace("\\n", "\n"),
+            "client_email": os.environ.get("FIREBASE_CLIENT_EMAIL"),
+            "client_id": os.environ.get("FIREBASE_CLIENT_ID"),
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token",
+            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+            "client_x509_cert_url": os.environ.get("FIREBASE_CLIENT_CERT_URL")
+        }
+        cred = credentials.Certificate(cred_dict)
+        firebase_admin.initialize_app(cred, {
+            'storageBucket': os.environ.get('FIREBASE_STORAGE_BUCKET')
+        })
+    except Exception as e:
+        logging.error(f"Failed to initialize Firebase: {str(e)}")
 
 app = FastAPI(
     title="Change Order Generator API",
