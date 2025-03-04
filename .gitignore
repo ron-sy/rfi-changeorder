@@ -3,6 +3,7 @@
 
 # Firebase credentials
 *.json
+!vercel.json
 
 # Python
 __pycache__/
