@@ -11,9 +11,5 @@
             "src": "/(.*)",
             "dest": "api.py"
         }
-    ],
-    "env": {
-        "OPENAI_API_KEY": "@openai-api-key",
-        "FIREBASE_STORAGE_BUCKET": "@firebase-storage-bucket"
-    }
+    ]
 } 
